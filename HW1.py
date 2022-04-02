@@ -1,10 +1,29 @@
-from qiskit import (execute ,Aer)
+import numpy as np
+from qiskit.visualization import plot_histogram
+from qiskit import (execute ,Aer, QuantumRegister,ClassicalRegister)
 
 # Use Aer ’s qasm_simulator
 simulator = Aer . get_backend ('qasm_simulator')
 from qiskit import QuantumCircuit
 
-# Q1
+def run_plot(circ, shots=1000, print_total=True, state_to_print=None):
+    # Execute the circuit on the qasm simulator
+    job = execute(circ, simulator, shots=shots)
+
+    # Grab results from the job
+    result = job.result()
+
+    # Returns counts
+    counts = result.get_counts(circ)
+    if print_total:
+        print("\nTotal count are:", counts)
+    if state_to_print:
+        print(f"\nState {state_to_print} count is:", counts[state_to_print])
+    # Draw the circuit
+    print(circ.draw())
+    plot_histogram(counts)
+
+# Q1_a
 # Hadmard and Measure
 circuit = QuantumCircuit(1, 1)
 circuit.h(0)
@@ -21,5 +40,42 @@ counts = result.get_counts(circuit)
 print("\nTotal count for 0 and 1 are:",counts)
 
 # Draw the circuit
-circuit.draw()
-print()
+print(circuit.draw())
+plot_histogram(counts)
+
+# Q1_b
+circuit = QuantumCircuit(2, 2)
+circuit.h(0)
+circuit.cx(0,1)
+circuit.measure(0,0)
+circuit.measure(1,1)
+run_plot(circuit)
+
+# Q2
+circuit = QuantumCircuit(6, 6)
+for i in range(6):
+    circuit.h(i)
+for i in range(6):
+    circuit.measure(i, i)
+
+run_plot(circuit, shots=(2**6)*1000, print_total=False, state_to_print='011111')
+
+# Q3
+circuit = QuantumCircuit(5, 5)
+circuit.h(0)
+for i in range(1, 5):
+    circuit.cx(0,i)
+for i in range(5):
+    circuit.measure(i, i)
+
+run_plot(circuit, shots=1000)
+
+# Q4
+aliceQubits = QuantumRegister(2, 'a')
+aliceCBits = ClassicalRegister(2, 'ac')
+bobQubits = QuantumRegister(1, 'b')
+bobCBits = ClassicalRegister(1 , 'bc')
+circuit = QuantumCircuit ( aliceQubits , bobQubits , aliceCBits ,bobCBits )
+circuit.u(np.pi/2, np.pi/2, 0, aliceQubits[0])
+circuit.h(aliceQubits[1])
+circuit.cx(aliceQubits[1],bobQubits[2])
