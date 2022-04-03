@@ -76,6 +76,13 @@ aliceCBits = ClassicalRegister(2, 'ac')
 bobQubits = QuantumRegister(1, 'b')
 bobCBits = ClassicalRegister(1 , 'bc')
 circuit = QuantumCircuit ( aliceQubits , bobQubits , aliceCBits ,bobCBits )
-circuit.u(np.pi/2, np.pi/2, 0, aliceQubits[0])
+
+circuit.u(np.pi/2, np.pi/2, 0, aliceQubits[0]) # rotate by theta and phi
+# entangle 2 qbits to bell state 00
 circuit.h(aliceQubits[1])
-circuit.cx(aliceQubits[1],bobQubits[2])
+circuit.cx(aliceQubits[1],bobQubits[0])
+
+circuit.measure(aliceQubits,aliceCBits)
+circuit.measure(bobQubits[0],bobCBits[0])
+
+#
