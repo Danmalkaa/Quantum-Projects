@@ -82,7 +82,22 @@ circuit.u(np.pi/2, np.pi/2, 0, aliceQubits[0]) # rotate by theta and phi
 circuit.h(aliceQubits[1])
 circuit.cx(aliceQubits[1],bobQubits[0])
 
+circuit.cx(aliceQubits[0],aliceQubits[1])
+circuit.h(aliceQubits[0])
 circuit.measure(aliceQubits,aliceCBits)
-circuit.measure(bobQubits[0],bobCBits[0])
 
-#
+# case 01
+circuit.x(bobQubits[0],bobCBits[0]).c_if(aliceCBits,1)
+
+# case 10
+circuit.z(bobQubits,bobCBits).c_if(aliceCBits,2)
+
+# case 11
+circuit.z(bobQubits,bobCBits).c_if(aliceCBits,3)
+circuit.x(bobQubits,bobCBits).c_if(aliceCBits,3)
+
+
+circuit.measure(bobQubits,bobCBits)
+
+run_plot(circuit, shots=1000)
+print()
